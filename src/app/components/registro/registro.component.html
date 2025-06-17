@@ -1,0 +1,100 @@
+<div class="registro-wrapper">
+    <app-mensaje *ngIf="mensajeVisible" [mensaje]="mensajeTexto" [tipo]="mensajeTipo" [autoCerrar]="true">
+    </app-mensaje>
+    <div class="registro-card">
+        <h2 class="text-center mb-4">Registro</h2>
+
+        <div *ngIf="!perfilSeleccionado" class="perfil-selector mb-3 d-flex gap-3 justify-content-center">
+            <button class="btn btn-outline-primary" (click)="seleccionarPerfil('paciente')">Paciente</button>
+            <button class="btn btn-outline-secondary" (click)="seleccionarPerfil('especialista')">Especialista</button>
+        </div>
+
+        <form *ngIf="perfilSeleccionado" [formGroup]="registroForm" (ngSubmit)="registrar()" class="formulario">
+            <!-- Nombre -->
+            <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre" />
+            <div *ngIf="registroForm.get('nombre')?.touched && registroForm.get('nombre')?.invalid"
+                class="text-danger small mt-1">
+                Ingrese un nombre válido (solo letras).
+            </div>
+
+            <!-- Apellido -->
+            <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido" />
+            <div *ngIf="registroForm.get('apellido')?.touched && registroForm.get('apellido')?.invalid"
+                class="text-danger small mt-1">
+                Ingrese un apellido válido (solo letras).
+            </div>
+
+            <!-- Edad -->
+            <input type="text" class="form-control" formControlName="edad" placeholder="Edad" />
+            <div *ngIf="registroForm.get('edad')?.touched && registroForm.get('edad')?.invalid"
+                class="text-danger small mt-1">
+                Ingrese una edad válida (solo números).
+            </div>
+
+            <!-- DNI -->
+            <input type="text" class="form-control" formControlName="dni" placeholder="DNI" />
+            <div *ngIf="registroForm.get('dni')?.touched && registroForm.get('dni')?.invalid"
+                class="text-danger small mt-1">
+                Ingrese un DNI válido (solo números).
+            </div>
+
+            <!-- Email -->
+            <input type="email" class="form-control" formControlName="email" placeholder="Email" />
+            <div *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.invalid"
+                class="text-danger small mt-1">
+                Ingrese un email válido.
+            </div>
+
+            <!-- Contraseña -->
+            <input type="password" class="form-control" formControlName="contrasena" placeholder="Contraseña"
+                required />
+            <div *ngIf="registroForm.get('contrasena')?.touched && registroForm.get('contrasena')?.invalid"
+                class="text-danger small mt-1">
+                La contraseña es obligatoria.
+            </div>
+
+            <!-- Paciente -->
+            <div *ngIf="perfilSeleccionado === 'paciente'">
+                <input type="text" class="form-control" formControlName="obraSocial" placeholder="Obra Social"
+                    required />
+                <label class="form-label mt-3">Foto de perfil:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoPaciente1($event)" required />
+                <label class="form-label mt-3">Segunda imagen:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoPaciente2($event)" required />
+            </div>
+
+            <!-- Especialista -->
+            <div *ngIf="perfilSeleccionado === 'especialista'">
+                <label class="form-label mt-3">Especialidad:</label>
+                <input type="text" class="form-control" formControlName="especialidad"
+                    placeholder="Escriba una especialidad..." [attr.autocomplete]="'off'" />
+
+                <!-- Lista de sugerencias filtradas usando el pipe -->
+                <ul class="list-group mt-1" *ngIf="especialidades.length && registroForm.get('especialidad')?.value">
+                    <li class="list-group-item list-group-item-action"
+                        *ngFor="let esp of especialidades | filtro:registroForm.get('especialidad')?.value"
+                        (click)="registroForm.get('especialidad')?.setValue(esp)">
+                        {{ esp }}
+                    </li>
+                </ul>
+
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" id="nuevaEspecialidad"
+                        formControlName="agregarEspecialidadManualmente" name="nuevaEspecialidad">
+                    <label for="nuevaEspecialidad" class="form-check-label">Agregar especialidad manualmente</label>
+                </div>
+
+                <input *ngIf="agregarEspecialidadManualmente" type="text" class="form-control"
+                    formControlName="nuevaEspecialidad" placeholder="Nueva especialidad" required />
+
+                <label class="form-label mt-3">Foto de perfil:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoEspecialista($event)" required />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary w-50 me-2">Registrar</button>
+                <button type="button" class="btn btn-secondary w-50 ms-2" (click)="cancelar()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

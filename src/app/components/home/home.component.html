@@ -1,0 +1,19 @@
+<button *ngIf="usuario" (click)="logout()" class="btn-cerrar-sesion">
+    Cerrar sesión
+</button>
+<div class="home-wrapper d-flex flex-column align-items-center">
+    <div class="overlay-card p-5 rounded shadow mt-5">
+        <h1 class="mb-4">Bienvenidos a Clínica Online</h1>
+        <div *ngIf="!usuario" class="d-flex flex-column gap-3">
+            <a routerLink="/login" class="btn btn-primary btn-lg">Ingresar</a>
+            <a routerLink="/registro" class="btn btn-outline-light btn-lg">Registro</a>
+        </div>
+    </div>
+
+    <div *ngIf="usuario" class="zona-botones mt-5">
+        <div class="boton-card" *ngFor="let boton of botones" [routerLink]="boton.ruta">
+            <img [src]="boton.imagen" [alt]="boton.texto" />
+            <p>{{ boton.texto }}</p>
+        </div>
+    </div>
+</div>

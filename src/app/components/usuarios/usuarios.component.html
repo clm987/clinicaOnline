@@ -1,0 +1,118 @@
+<div class="text-end mb-3">
+    <button class="btn-cerrar-sesion btn-sm" (click)="cerrarSesion()">Cerrar sesión</button>
+</div>
+<div class="usuarios-wrapper">
+    <app-mensaje *ngIf="mensajeVisible" [mensaje]="mensajeTexto" [tipo]="mensajeTipo"
+        [autoCerrar]="false"></app-mensaje>
+
+    <h2 class="mb-4">Gestión de Usuarios</h2>
+
+    <div class="usuarios-lista mb-5">
+        <h4 class="mb-3">Usuarios registrados</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Perfil</th>
+                        <th>Email</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of usuarios">
+                        <td>{{ user.nombre }}</td>
+                        <td>{{ user.apellido }}</td>
+                        <td>{{ user.perfil }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <span *ngIf="user.perfil === 'especialista'" class="badge"
+                                [ngClass]="user.habilitado ? 'bg-success' : 'bg-secondary'">
+                                {{ user.habilitado ? 'Habilitado' : 'Inhabilitado' }}
+                            </span>
+                        </td>
+                        <td>
+                            <button *ngIf="user.perfil === 'especialista'"
+                                class="btn btn-sm btn-outline-primary btn-toggle" (click)="alternarHabilitacion(user)">
+                                Cambiar estado
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="crear-usuario">
+        <h4 class="mb-3">Crear nuevo usuario</h4>
+
+        <div class="perfil-selector d-flex gap-3 mb-3">
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="paciente" name="perfil" value="paciente"
+                    [(ngModel)]="perfilSeleccionado" />
+                <label class="form-check-label" for="paciente">Paciente</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="especialista" name="perfil" value="especialista"
+                    [(ngModel)]="perfilSeleccionado" />
+                <label class="form-check-label" for="especialista">Especialista</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="admin" name="perfil" value="admin"
+                    [(ngModel)]="perfilSeleccionado" />
+                <label class="form-check-label" for="admin">Administrador</label>
+            </div>
+        </div>
+
+        <form *ngIf="perfilSeleccionado" [formGroup]="registroForm" (ngSubmit)="crearUsuario()"
+            class="formulario-admin">
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Nombre" />
+            <input type="text" formControlName="apellido" class="form-control" placeholder="Apellido" />
+            <input type="number" formControlName="edad" class="form-control" placeholder="Edad" />
+            <input type="text" formControlName="dni" class="form-control" placeholder="DNI" />
+            <input type="email" formControlName="email" class="form-control" placeholder="Email" />
+            <input type="password" formControlName="contrasena" class="form-control" placeholder="Contraseña" />
+
+            <div *ngIf="perfilSeleccionado === 'paciente'">
+                <input type="text" formControlName="obraSocial" class="form-control" placeholder="Obra Social" />
+                <label class="form-label mt-2">Foto de perfil:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoPaciente1($event)" />
+                <label class="form-label mt-2">Segunda imagen:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoPaciente2($event)" />
+            </div>
+
+            <div *ngIf="perfilSeleccionado === 'especialista'">
+                <input type="text" formControlName="especialidad" class="form-control mt-2"
+                    placeholder="Escriba una especialidad..." />
+                <ul class="list-group mt-1" *ngIf="especialidades.length && registroForm.get('especialidad')?.value">
+                    <li class="list-group-item list-group-item-action"
+                        *ngFor="let esp of especialidades | filtro:registroForm.get('especialidad')?.value"
+                        (click)="registroForm.get('especialidad')?.setValue(esp)">
+                        {{ esp }}
+                    </li>
+                </ul>
+
+                <div class="form-check mt-2">
+                    <input type="checkbox" class="form-check-input" id="nuevaEspecialidad"
+                        formControlName="agregarEspecialidadManualmente" />
+                    <label class="form-check-label" for="nuevaEspecialidad">Agregar especialidad manualmente</label>
+                </div>
+
+                <input *ngIf="agregarEspecialidadManualmente" type="text" class="form-control"
+                    formControlName="nuevaEspecialidad" placeholder="Nueva especialidad" />
+
+                <label class="form-label mt-2">Foto de perfil:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoEspecialista($event)" />
+            </div>
+
+            <div *ngIf="perfilSeleccionado === 'admin'">
+                <label class="form-label mt-2">Foto de perfil:</label>
+                <input type="file" class="form-control" (change)="seleccionarArchivoAdmin($event)" />
+            </div>
+
+            <button type="submit" class="btn btn-success mt-3">Crear Usuario</button>
+        </form>
+    </div>
+</div>

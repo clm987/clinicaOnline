@@ -1,0 +1,121 @@
+:host {
+    display: block;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.home-wrapper {
+    height: 100%;
+    width: 100%;
+    background-image: url('/assets/img/fondoClinica.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding-top: 3rem;
+}
+
+.overlay-card {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #003366;
+    padding: 3rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+}
+
+.overlay-card h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    animation: fadeSlideIn 0.8s ease-out forwards;
+}
+
+.overlay-card a.btn {
+    font-size: 1.2rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.zona-botones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.boton-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    width: 200px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-family: 'Open Sans', sans-serif;
+    color: #003366;
+    text-decoration: none;
+}
+
+.boton-card img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+
+.boton-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 51, 102, 0.4);
+}
+
+.boton-card p {
+    margin: 0;
+    font-weight: 600;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-cerrar-sesion {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: transparent;
+    border: none;
+    color: #003366;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.btn-cerrar-sesion:hover {
+    color: #dc3545;
+    text-decoration: underline;
+}
+
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+}

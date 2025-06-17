@@ -1,0 +1,32 @@
+<div class="login-wrapper">
+    <div class="login-card">
+        <button class="btn-close" (click)="cancelar()">×</button>
+        <h2 class="text-center mb-4">Iniciar Sesión</h2>
+
+        <form (ngSubmit)="login()" class="d-flex flex-column gap-3">
+            <div>
+                <label for="usuario" class="form-label">Correo electrónico</label>
+                <input id="usuario" type="email" class="form-control" [(ngModel)]="usuario" name="usuario" required />
+            </div>
+
+            <div>
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <input id="contrasena" type="password" class="form-control" [(ngModel)]="contrasena" name="contrasena"
+                    required />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+            <button type="button" class="btn btn-outline-secondary w-100" (click)="irARegistro()">Registrarme</button>
+            <button type="button" class="btn btn-outline-success w-100 d-flex justify-content-center align-items-center"
+                (click)="loginRapido()" [disabled]="cargando">
+                <span *ngIf="!cargando">Acceso Rápido</span>
+                <div *ngIf="cargando" class="spinner-border spinner-border-sm text-success ms-2" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </button>
+        </form>
+
+        <app-mensaje *ngIf="mensajeVisible" [mensaje]="mensajeTexto" [tipo]="mensajeTipo" [autoCerrar]="false">
+        </app-mensaje>
+    </div>
+</div>
