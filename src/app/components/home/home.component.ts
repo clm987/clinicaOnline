@@ -33,14 +33,14 @@ export class HomeComponent implements OnInit {
     switch (this.perfil) {
       case 'paciente':
         this.botones = [
-          { texto: 'Mis turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/mis-turnos' },
+          { texto: 'Mis turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/turnos/paciente' },
           { texto: 'Mi perfil', imagen: 'assets/img/botonUsuarios.png', ruta: '/mi-perfil' }
         ];
         break;
 
       case 'especialista':
         this.botones = [
-          { texto: 'Turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/turnos-especialista' },
+          { texto: 'Turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/turnos/especialista' },
           { texto: 'Mi perfil', imagen: 'assets/img/botonUsuarios.png', ruta: '/mi-perfil' }
         ];
         break;

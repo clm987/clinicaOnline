@@ -32,3 +32,46 @@
 .list-group-item:hover {
     background-color: #f0f0f0;
 }
+
+.zona-botones {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.boton-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-family: 'Open Sans', sans-serif;
+    color: #003366;
+    text-decoration: none;
+    padding: 1rem;
+}
+
+.boton-card img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+
+.boton-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 51, 102, 0.4);
+}
+
+.boton-card p {
+    margin: 0;
+    font-weight: 600;
+}

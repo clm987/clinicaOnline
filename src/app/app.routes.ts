@@ -3,6 +3,7 @@ import { HomeComponent } from './components/home/home.component';
 import { RegistroComponent } from '../../src/app/components/registro/registro.component'
 import { LoginComponent } from '../../src/app/components/login/login.component';
 import { adminGuard } from './guards/admin.guard';
+import { TurnosGuard } from './guards/turnos.guard';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 
 
@@ -15,7 +16,10 @@ export const routes: Routes = [
         path: 'usuarios',
         component: UsuariosComponent,
         canActivate: [adminGuard]
+    },
+    {
+        path: 'turnos',
+        loadChildren: () => import('./turnos/turnos.module').then(m => m.TurnosModule)
     }
-
 
 ];

@@ -6,11 +6,12 @@ import { CredencialesService } from '../../services/credenciales.service';
 import { SupabaseDbService } from '../../services/supabase-db.service';
 import { FiltroPipe } from '../../pipes/filtro.pipe';
 import { MensajeComponent } from '../../components/mensaje/mensaje.component';
+import { CaptchaDirective } from '../../directivas/captcha.directive';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FiltroPipe, MensajeComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FiltroPipe, MensajeComponent, FormsModule, CaptchaDirective],
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css']
 })
@@ -22,6 +23,8 @@ export class RegistroComponent {
   mensajeTexto = '';
   mensajeTipo: 'success' | 'error' = 'success';
   mensajeVisible = false;
+  captchaPregunta = '';
+  captchaResultado = '';
 
   registroForm!: FormGroup;
   perfilSeleccionado: 'paciente' | 'especialista' | null = null;
@@ -43,7 +46,8 @@ export class RegistroComponent {
       obraSocial: [''],
       especialidad: [''],
       nuevaEspecialidad: [''],
-      agregarEspecialidadManualmente: [false]
+      agregarEspecialidadManualmente: [false],
+      captcha: ['', Validators.required]
     });
 
     try {
@@ -51,6 +55,7 @@ export class RegistroComponent {
     } catch (error) {
       console.error('Error cargando especialidades:', error);
     }
+    this.generarCaptcha();
   }
 
   seleccionarPerfil(tipo: 'paciente' | 'especialista') {
@@ -128,5 +133,12 @@ export class RegistroComponent {
 
   cancelar() {
     this.router.navigate(['/home']);
+  }
+
+  generarCaptcha() {
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    this.captchaPregunta = `¿Cuánto es ${a} + ${b}?`;
+    this.captchaResultado = (a + b).toString();
   }
 }

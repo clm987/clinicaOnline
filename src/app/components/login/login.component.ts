@@ -19,7 +19,7 @@ export class LoginComponent {
   mensajeVisible = false;
   mensajeTexto = '';
   mensajeTipo: 'success' | 'error' | 'warning' | 'info' = 'info';
-  cargando: boolean = false;
+  cargando: string | null = null;
 
   @Output() onLoginSuccess = new EventEmitter<any>();
   @Output() onCancel = new EventEmitter<void>();
@@ -54,6 +54,18 @@ export class LoginComponent {
     }
   }
 
+  async loginRapido(email: string, imagenKey: string) {
+    this.cargando = imagenKey;
+    this.usuario = email;
+    this.contrasena = '123456';
+
+    try {
+      await this.login();
+    } finally {
+      this.cargando = null;
+    }
+  }
+
   cancelar() {
     this.onCancel.emit();
   }
@@ -62,23 +74,15 @@ export class LoginComponent {
     this.router.navigate(['/registro']);
   }
 
-
-  async loginRapido() {
-    this.cargando = true;
-    this.usuario = 'unemaildeprueba987@gmail.com';
-    this.contrasena = '123456';
-
-    try {
-      await this.login();
-    } finally {
-      this.cargando = false;
-    }
-  }
-
   mostrarMensaje(texto: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') {
     this.mensajeTexto = texto;
     this.mensajeTipo = tipo;
     this.mensajeVisible = true;
     setTimeout(() => (this.mensajeVisible = false), 4000);
+  }
+
+  logout() {
+    this.credencialesService.logout();
+    this.router.navigate(['/home']);
   }
 }

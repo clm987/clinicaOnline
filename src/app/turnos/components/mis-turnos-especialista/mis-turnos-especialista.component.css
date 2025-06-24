@@ -1,0 +1,58 @@
+.filtros {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.filtros .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.filtros .btn {
+    min-width: 100px;
+}
+
+.filtros input[type="text"] {
+    max-width: 300px;
+}
+
+.lista-turnos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.lista-turnos .card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.lista-turnos .card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.lista-turnos .card-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.6em;
+    margin-top: 0.5rem;
+}
+
+.card .form-control {
+    max-width: 100%;
+}
+
+.card .btn {
+    min-width: 100px;
+}
