@@ -1,6 +1,8 @@
 <div class="turnos-wrapper">
     <div class="turnos-card">
         <h2 class="text-center mb-4">Mis Turnos</h2>
+        <app-mensaje *ngIf="mensaje() as info" [tipo]="info.tipo" [mensaje]="info.texto">
+        </app-mensaje>
 
         <div class="mb-3">
             <label class="form-label">Especialidades</label>

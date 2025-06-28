@@ -20,9 +20,11 @@ export class RegistroComponent {
   private dbService = inject(SupabaseDbService);
   private credencialesService = inject(CredencialesService);
   private router = inject(Router);
+
   mensajeTexto = '';
   mensajeTipo: 'success' | 'error' = 'success';
   mensajeVisible = false;
+
   captchaPregunta = '';
   captchaResultado = '';
 
@@ -50,29 +52,24 @@ export class RegistroComponent {
       captcha: ['', Validators.required]
     });
 
-    try {
-      this.especialidades = await this.dbService.obtenerEspecialidades();
-    } catch (error) {
-      console.error('Error cargando especialidades:', error);
-    }
+    this.especialidades = await this.dbService.obtenerEspecialidades();
     this.generarCaptcha();
   }
 
   seleccionarPerfil(tipo: 'paciente' | 'especialista') {
     this.perfilSeleccionado = tipo;
-    //  this.mensaje = '';
   }
 
-  seleccionarArchivoPaciente1(event: any) {
-    this.imagenPaciente1 = event.target.files[0];
+  seleccionarArchivoPaciente1(e: any) {
+    this.imagenPaciente1 = e.target.files[0];
   }
 
-  seleccionarArchivoPaciente2(event: any) {
-    this.imagenPaciente2 = event.target.files[0];
+  seleccionarArchivoPaciente2(e: any) {
+    this.imagenPaciente2 = e.target.files[0];
   }
 
-  seleccionarArchivoEspecialista(event: any) {
-    this.imagenEspecialista = event.target.files[0];
+  seleccionarArchivoEspecialista(e: any) {
+    this.imagenEspecialista = e.target.files[0];
   }
 
   async registrar() {
@@ -84,7 +81,7 @@ export class RegistroComponent {
 
       const form = this.registroForm.value;
       const user = await this.credencialesService.registrarUsuario(form.email, form.contrasena);
-      console.log('contraseña: ', form.contrasena);
+
       let avatarUrl = '';
       let imagenExtra1 = '';
 
@@ -95,7 +92,6 @@ export class RegistroComponent {
       } else {
         if (!this.imagenEspecialista) throw new Error('Debe subir una imagen');
         avatarUrl = await this.credencialesService.subirAvatar(this.imagenEspecialista);
-
         if (this.agregarEspecialidadManualmente && form.nuevaEspecialidad) {
           await this.dbService.agregarEspecialidad(form.nuevaEspecialidad);
         }
@@ -106,7 +102,8 @@ export class RegistroComponent {
         extra.obra_social = form.obraSocial;
         extra.imagen_extra_1 = imagenExtra1;
       } else {
-        extra.especialidad = this.agregarEspecialidadManualmente ? form.nuevaEspecialidad : form.especialidad;
+        const espSel = this.agregarEspecialidadManualmente ? form.nuevaEspecialidad : form.especialidad;
+        extra.especialidades = [espSel];
       }
 
       await this.credencialesService.guardarDatosUsuario(
@@ -124,8 +121,8 @@ export class RegistroComponent {
       this.mensajeTipo = 'success';
       this.mensajeVisible = true;
       this.router.navigate(['/home']);
-    } catch (error: any) {
-      this.mensajeTexto = error.message || 'Ocurrió un error';
+    } catch (e: any) {
+      this.mensajeTexto = e.message || 'Ocurrió un error';
       this.mensajeTipo = 'error';
       this.mensajeVisible = true;
     }

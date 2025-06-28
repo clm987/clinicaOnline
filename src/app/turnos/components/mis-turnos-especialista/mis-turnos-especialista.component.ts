@@ -21,13 +21,17 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   });
 
   comentario = signal<{ [turnoId: string]: string }>({});
-
   usuarioActual: any = null;
 
   async ngOnInit() {
-    this.usuarioActual = await this.auth.getUsuarioActual();
-    const perfil = await this.auth.getPerfilActual();
+    this.usuarioActual = await this.auth.getUsuarioActualAsync();
+    await this.cargarDatos();
+  }
 
+  async cargarDatos() {
+    if (!this.usuarioActual) return;
+
+    const perfil = await this.auth.getPerfilActual();
     if (perfil !== 'especialista') return;
 
     const [todosTurnos, misEspecialidades] = await Promise.all([
@@ -82,26 +86,26 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     const texto = this.comentario()[turno.id!];
     if (!texto) return;
     await this.db.cancelarTurno(turno.id!, texto);
-    this.ngOnInit();
+    await this.cargarDatos();
   }
 
   async rechazarTurno(turno: Turno) {
     const texto = this.comentario()[turno.id!];
     if (!texto) return;
     await this.db.rechazarTurno(turno.id!, texto);
-    this.ngOnInit();
+    await this.cargarDatos();
   }
 
   async aceptarTurno(turno: Turno) {
     await this.db.aceptarTurno(turno.id!);
-    this.ngOnInit();
+    await this.cargarDatos();
   }
 
   async finalizarTurno(turno: Turno) {
     const texto = this.comentario()[turno.id!];
     if (!texto) return;
     await this.db.finalizarTurno(turno.id!, texto);
-    this.ngOnInit();
+    await this.cargarDatos();
   }
 
   actualizarComentario(turnoId: string, texto: string) {

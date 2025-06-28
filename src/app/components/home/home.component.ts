@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CredencialesService } from '../../services/credenciales.service';
+import { User } from '@supabase/supabase-js';
 
 @Component({
   selector: 'app-home',
@@ -13,23 +14,28 @@ import { CredencialesService } from '../../services/credenciales.service';
 export class HomeComponent implements OnInit {
   private credencialesService = inject(CredencialesService);
 
-  usuario = this.credencialesService.getUsuarioActual();
+  usuario: User | null = null;          // ← ahora se setea en ngOnInit
   perfil: string | null = null;
-
   botones: { texto: string; imagen: string; ruta: string }[] = [];
-  logout() {
-    this.credencialesService.logout();
-    this.usuario = null;
-  }
 
   async ngOnInit() {
+    // ① Recupera el usuario incluso después de recargar la página
+    this.usuario = await this.credencialesService.getUsuarioActualAsync();
+
     if (this.usuario) {
+      // ② Obtiene el perfil y carga los botones correspondientes
       this.perfil = await this.credencialesService.getPerfilActual();
       this.cargarBotones();
     }
   }
 
-  cargarBotones() {
+  logout() {
+    this.credencialesService.logout();
+    this.usuario = null;
+    this.botones = [];
+  }
+
+  private cargarBotones() {
     switch (this.perfil) {
       case 'paciente':
         this.botones = [
@@ -49,7 +55,7 @@ export class HomeComponent implements OnInit {
         this.botones = [
           { texto: 'Administrar Turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/admin-turnos' },
           { texto: 'Administrar Usuarios', imagen: 'assets/img/botonUsuarios.png', ruta: '/usuarios' },
-          { texto: 'Estadísticas y Reportes', imagen: 'assets/img/botonEstadisticas.png', ruta: '/estadisticas' }
+          { texto: 'Estadísticas', imagen: 'assets/img/botonEstadisticas.png', ruta: '/estadisticas' }
         ];
         break;
 

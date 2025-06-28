@@ -159,6 +159,7 @@ export class SupabaseDbService {
         especialista_id_input: especialistaId,
         fecha_input: fecha
       });
+    console.log("data del metodo buscar horarios", data);
     if (error) throw error;
     return data;
   }

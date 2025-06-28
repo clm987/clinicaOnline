@@ -14,30 +14,32 @@ export class CredencialesService {
     this.cargarUsuarioDesdeSesion();
   }
 
-  public async cargarUsuarioDesdeSesion() {
+
+  private async cargarUsuarioDesdeSesion() {
     const { data: { user } } = await this.supabase.auth.getUser();
     this.usuarioActual = user || null;
   }
 
-  async login(email: string, password: string): Promise<User> {
-    const { data, error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (error || !data.user) {
-      throw new Error('Credenciales inválidas');
-    }
+  async getUsuarioActualAsync(): Promise<User | null> {
+    if (this.usuarioActual) return this.usuarioActual;
+    const { data: { user } } = await this.supabase.auth.getUser();
+    this.usuarioActual = user || null;
+    return this.usuarioActual;
+  }
+
+  async login(email: string, password: string): Promise<User> {
+    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+
+    if (error || !data.user) throw new Error('Credenciales inválidas');
 
     const usuarioDb = await this.dbService.obtenerUsuarioActual(data.user.id);
 
-    if (!data.user.email_confirmed_at) {
+    if (!data.user.email_confirmed_at)
       throw new Error('Debe verificar su email para ingresar.');
-    }
 
-    if (usuarioDb.perfil === 'especialista' && !usuarioDb.habilitado) {
+    if (usuarioDb.perfil === 'especialista' && !usuarioDb.habilitado)
       throw new Error('Su cuenta aún no fue habilitada por un administrador.');
-    }
 
     this.usuarioActual = data.user;
     return data.user;
@@ -58,11 +60,7 @@ export class CredencialesService {
 
   async registrarUsuario(email: string, contrasena: string): Promise<User> {
     const { data, error } = await this.supabase.auth.signUp({ email, password: contrasena });
-
-    if (error || !data.user) {
-      throw new Error('Error al registrar: ' + error?.message);
-    }
-
+    if (error || !data.user) throw new Error('Error al registrar: ' + error?.message);
     return data.user;
   }
 
@@ -73,13 +71,9 @@ export class CredencialesService {
         cacheControl: '3600',
         upsert: false
       });
-
-    if (error || !data?.path) {
-      throw new Error('Error al subir imagen: ' + error?.message);
-    }
-
-    const { data: urlData } = this.supabase.storage.from('avatars').getPublicUrl(data.path);
-    return urlData.publicUrl;
+    if (error || !data?.path) throw new Error('Error al subir imagen: ' + error?.message);
+    const { data: url } = this.supabase.storage.from('avatars').getPublicUrl(data.path);
+    return url.publicUrl;
   }
 
   async guardarDatosUsuario(
@@ -104,18 +98,13 @@ export class CredencialesService {
       habilitado: perfil === 'especialista' ? false : true,
       ...extra
     };
-
     const { error } = await this.supabase.from('usuarios').insert(payload);
-
-    if (error) {
-      throw new Error('Error al guardar datos: ' + error.message);
-    }
+    if (error) throw new Error('Error al guardar datos: ' + error.message);
   }
 
   async getPerfilActual(): Promise<string | null> {
-    const user = this.getUsuarioActual();
+    const user = await this.getUsuarioActualAsync();
     if (!user) return null;
-
     const usuarioDb = await this.dbService.obtenerUsuarioActual(user.id);
     return usuarioDb.perfil || null;
   }
