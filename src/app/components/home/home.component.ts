@@ -2,7 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CredencialesService } from '../../services/credenciales.service';
+import { SupabaseDbService } from '../../services/supabase-db.service';
 import { User } from '@supabase/supabase-js';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -13,17 +15,17 @@ import { User } from '@supabase/supabase-js';
 })
 export class HomeComponent implements OnInit {
   private credencialesService = inject(CredencialesService);
+  private router = inject(Router);
+  private auth = inject(CredencialesService);
 
-  usuario: User | null = null;          // ← ahora se setea en ngOnInit
+  usuario: User | null = null;
   perfil: string | null = null;
   botones: { texto: string; imagen: string; ruta: string }[] = [];
 
   async ngOnInit() {
-    // ① Recupera el usuario incluso después de recargar la página
     this.usuario = await this.credencialesService.getUsuarioActualAsync();
 
     if (this.usuario) {
-      // ② Obtiene el perfil y carga los botones correspondientes
       this.perfil = await this.credencialesService.getPerfilActual();
       this.cargarBotones();
     }
@@ -53,7 +55,7 @@ export class HomeComponent implements OnInit {
 
       case 'admin':
         this.botones = [
-          { texto: 'Administrar Turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/admin-turnos' },
+          { texto: 'Administrar Turnos', imagen: 'assets/img/botonTurnos.png', ruta: '/turnos/admin' },
           { texto: 'Administrar Usuarios', imagen: 'assets/img/botonUsuarios.png', ruta: '/usuarios' },
           { texto: 'Estadísticas', imagen: 'assets/img/botonEstadisticas.png', ruta: '/estadisticas' }
         ];
@@ -62,5 +64,17 @@ export class HomeComponent implements OnInit {
       default:
         this.botones = [];
     }
+  }
+
+  irALogin() {
+    this.router.navigate(['/login']);
+  }
+
+  irARegistro() {
+    this.router.navigate(['/registro']);
+  }
+  async cerrarSesion() {
+    await this.auth.logout();
+    window.location.href = '/home';
   }
 }

@@ -1,9 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule
+} from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { CredencialesService } from '../../services/credenciales.service';
 import { SupabaseDbService } from '../../services/supabase-db.service';
+
 import { FiltroPipe } from '../../pipes/filtro.pipe';
 import { MensajeComponent } from '../../components/mensaje/mensaje.component';
 import { CaptchaDirective } from '../../directivas/captcha.directive';
@@ -11,7 +19,14 @@ import { CaptchaDirective } from '../../directivas/captcha.directive';
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FiltroPipe, MensajeComponent, FormsModule, CaptchaDirective],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    FiltroPipe,
+    MensajeComponent,
+    CaptchaDirective
+  ],
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css']
 })
@@ -29,8 +44,11 @@ export class RegistroComponent {
   captchaResultado = '';
 
   registroForm!: FormGroup;
+
   perfilSeleccionado: 'paciente' | 'especialista' | null = null;
   especialidades: string[] = [];
+  especialidadesSeleccionadas: string[] = [];
+
   agregarEspecialidadManualmente = false;
 
   imagenPaciente1: File | null = null;
@@ -63,13 +81,22 @@ export class RegistroComponent {
   seleccionarArchivoPaciente1(e: any) {
     this.imagenPaciente1 = e.target.files[0];
   }
-
   seleccionarArchivoPaciente2(e: any) {
     this.imagenPaciente2 = e.target.files[0];
   }
-
   seleccionarArchivoEspecialista(e: any) {
     this.imagenEspecialista = e.target.files[0];
+  }
+
+  agregarEspecialidad(item: string) {
+    const nombre = item.trim();
+    if (!nombre || this.especialidadesSeleccionadas.includes(nombre)) return;
+    this.especialidadesSeleccionadas.push(nombre);
+    this.registroForm.get('especialidad')?.setValue('');
+  }
+
+  eliminarEspecialidad(nombre: string) {
+    this.especialidadesSeleccionadas = this.especialidadesSeleccionadas.filter(e => e !== nombre);
   }
 
   async registrar() {
@@ -79,8 +106,8 @@ export class RegistroComponent {
         throw new Error('Complete todos los campos requeridos.');
       }
 
-      const form = this.registroForm.value;
-      const user = await this.credencialesService.registrarUsuario(form.email, form.contrasena);
+      const f = this.registroForm.value;
+      const user = await this.credencialesService.registrarUsuario(f.email, f.contrasena);
 
       let avatarUrl = '';
       let imagenExtra1 = '';
@@ -92,26 +119,30 @@ export class RegistroComponent {
       } else {
         if (!this.imagenEspecialista) throw new Error('Debe subir una imagen');
         avatarUrl = await this.credencialesService.subirAvatar(this.imagenEspecialista);
-        if (this.agregarEspecialidadManualmente && form.nuevaEspecialidad) {
-          await this.dbService.agregarEspecialidad(form.nuevaEspecialidad);
+
+        if (this.agregarEspecialidadManualmente && f.nuevaEspecialidad) {
+          await this.dbService.agregarEspecialidad(f.nuevaEspecialidad);
+          this.agregarEspecialidad(f.nuevaEspecialidad);
         }
       }
 
       const extra: any = {};
       if (this.perfilSeleccionado === 'paciente') {
-        extra.obra_social = form.obraSocial;
+        extra.obra_social = f.obraSocial;
         extra.imagen_extra_1 = imagenExtra1;
       } else {
-        const espSel = this.agregarEspecialidadManualmente ? form.nuevaEspecialidad : form.especialidad;
-        extra.especialidades = [espSel];
+        if (!this.especialidadesSeleccionadas.length) {
+          throw new Error('Debe seleccionar al menos una especialidad');
+        }
+        extra.especialidades = this.especialidadesSeleccionadas;
       }
 
       await this.credencialesService.guardarDatosUsuario(
         user,
-        form.nombre,
-        form.apellido,
-        +form.edad,
-        form.dni,
+        f.nombre,
+        f.apellido,
+        +f.edad,
+        f.dni,
         this.perfilSeleccionado,
         avatarUrl,
         extra

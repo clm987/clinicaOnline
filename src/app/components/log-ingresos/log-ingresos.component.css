@@ -1,0 +1,29 @@
+.log-wrapper {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table {
+    border: 1px solid #c9def1;
+}
+
+.custom-table thead {
+    background-color: #e6f0fb;
+}
+
+.custom-table th {
+    font-weight: 600;
+    color: #003366;
+    border: 1px solid #c9def1;
+}
+
+.custom-table td {
+    border: 1px solid #c9def1;
+}
+
+.table-responsive {
+    display: inline;
+    justify-content: center;
+}

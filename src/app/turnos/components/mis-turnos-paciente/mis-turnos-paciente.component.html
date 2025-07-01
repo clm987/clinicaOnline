@@ -1,82 +1,157 @@
 <div class="turnos-wrapper">
+    <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
     <div class="turnos-card">
         <h2 class="text-center mb-4">Mis Turnos</h2>
-        <app-mensaje *ngIf="mensaje() as info" [tipo]="info.tipo" [mensaje]="info.texto">
-        </app-mensaje>
 
-        <div class="mb-3">
-            <label class="form-label">Especialidades</label>
-            <div class="d-flex flex-wrap gap-2">
-                <button *ngFor="let esp of especialidades()" class="btn btn-outline-primary btn-sm"
-                    (click)="seleccionarEspecialidad(esp)">
-                    {{ esp }}
+        <app-mensaje *ngIf="mensaje() as info" [tipo]="info.tipo" [mensaje]="info.texto"></app-mensaje>
+
+        <section class="panel-seleccion">
+            <div class="d-flex flex-wrap gap-3 mb-3">
+                <button *ngFor="let esp of especialidades()" botonesRedondos class="especialidad-btn"
+                    (click)="seleccionarEspecialidad(esp.nombre)" [attr.aria-label]="esp.nombre">
+                    <img [src]="esp.imagen_url || '/assets/img/placeholder-esp.png'" [alt]="esp.nombre"
+                        loading="lazy" />
                 </button>
             </div>
-        </div>
 
-        <div *ngIf="especialidadSeleccionada" class="mb-3">
-            <label class="form-label">Especialistas</label>
-            <div class="d-flex flex-wrap gap-2">
-                <button *ngFor="let est of especialistasFiltrados()" class="btn btn-outline-success btn-sm"
-                    (click)="seleccionarEspecialista(est)">
-                    {{ est.nombre }} {{ est.apellido }}
-                </button>
-            </div>
-        </div>
-
-        <div *ngIf="horariosDisponibles().length > 0" class="mb-3">
-            <label class="form-label">Horarios disponibles</label>
-            <div class="d-flex flex-wrap gap-2">
-                <button *ngFor="let h of horariosDisponibles()" class="btn btn-outline-info btn-sm"
-                    (click)="seleccionarHorario(h)">
-                    {{ h.fecha | date: 'shortDate' }} - {{ h.horario }}
-                </button>
-            </div>
-        </div>
-
-        <div *ngIf="horarioSeleccionado" class="alert alert-warning mt-3">
-            ¿Confirmás solicitar un turno con el especialista
-            <strong>{{ nombreEspecialistaSeleccionado }}</strong> el
-            <strong>{{ horarioSeleccionado.fecha | date: 'fullDate' }}</strong> a las
-            <strong>{{ horarioSeleccionado.horario }}</strong>?
-            <div class="mt-3 d-flex gap-2">
-                <button class="btn btn-success btn-sm" (click)="confirmarTurno()">Confirmar</button>
-                <button class="btn btn-secondary btn-sm" (click)="cancelarSeleccion()">Cancelar</button>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <div *ngFor="let turno of turnos()" class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ turno.especialidad }}</h5>
-                    <p class="card-text">
-                        <strong>Especialista:</strong> {{ turno.nombre_especialista }}<br />
-                        <strong>Fecha:</strong> {{ turno.fecha_turno | date: 'fullDate' }}<br />
-                        <strong>Hora:</strong> {{ turno.hora_turno }}
-                    </p>
-                    <span class="badge bg-info text-dark">{{ turno.estado }}</span>
-
-                    <div class="mt-3" *ngIf="turno.estado === 'solicitado'">
-                        <input type="text" class="form-control mb-2" [(ngModel)]="turno.motivo_cancelacion"
-                            placeholder="Motivo de cancelación">
-                        <button class="btn btn-danger btn-sm" (click)="cancelarTurno(turno)">Cancelar turno</button>
-                    </div>
-
-                    <div class="mt-3" *ngIf="turno.estado === 'realizado' && !turno.calificacion_paciente">
-                        <input type="text" class="form-control mb-2" [(ngModel)]="turno.comentario_paciente"
-                            placeholder="Tu comentario sobre la atención">
-                        <button class="btn btn-primary btn-sm" (click)="calificarTurno(turno)">Calificar
-                            atención</button>
-                    </div>
-
-                    <div class="mt-3 d-flex gap-2"
-                        *ngIf="turno.estado === 'realizado' && turno.comentario_especialista">
-                        <button class="btn btn-info btn-sm" (click)="verResena(turno)">Ver reseña</button>
-                        <button class="btn btn-secondary btn-sm" (click)="completarEncuesta(turno)">Completar
-                            encuesta</button>
+            <div *ngIf="especialidadSeleccionada" class="mb-3">
+                <label class="form-label">Especialistas</label>
+                <div class="d-flex flex-wrap gap-3">
+                    <div *ngFor="let est of especialistasFiltrados()" class="especialista-card text-center">
+                        <button botonesRedondos class="especialista-btn" (click)="seleccionarEspecialista(est)"
+                            [attr.aria-label]="`${est.nombre} ${est.apellido}`">
+                            <img [src]="est.avatar_url || '/assets/img/placeholder-user.png'"
+                                [alt]="`${est.nombre} ${est.apellido}`" loading="lazy" />
+                        </button>
+                        <small class="nombre-label mt-1 d-block">
+                            {{ est.nombre }} {{ est.apellido }}
+                        </small>
                     </div>
                 </div>
             </div>
+            <div *ngIf="loadingFechas" class="spinner-wrapper text-center my-4">
+                <div class="spinner-border text-primary" role="status"></div>
+                <div class="mt-2">Cargando...</div>
+            </div>
+            <div *ngIf="fechasDisponibles().length" class="mb-3">
+                <label class="form-label">Fechas disponibles</label>
+                <div class="fechas-container">
+                    <button *ngFor="let f of fechasDisponibles()" botonesRectangulares class="fecha-btn"
+                        (click)="seleccionarFecha(f)" [class.active]="f === fechaSeleccionada"
+                        [attr.aria-label]="'Fecha ' + (f | date:'fullDate')">
+                        {{ f | date: 'dd/MM' }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="fechaSeleccionada && horasParaFecha().length" class="mb-3">
+                <label class="form-label">Horarios disponibles</label>
+                <div class="fechas-container">
+                    <button *ngFor="let h of horasParaFecha()" botonesRectangulares class="hora-btn"
+                        (click)="seleccionarHorario({ horario: h, fecha: fechaSeleccionada! })">
+                        {{ formatearHora(h) }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="horarioSeleccionado" class="alert alert-warning mt-3">
+                ¿Confirmás solicitar un turno con el especialista
+                <strong>{{ nombreEspecialistaSeleccionado }}</strong> el
+                <strong>{{ horarioSeleccionado.fecha | date:'fullDate' }}</strong> a las
+                <strong>{{ horarioSeleccionado.horario }}</strong>?
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-success btn-sm" botonesRectangulares
+                        (click)="confirmarTurno()">Confirmar</button>
+                    <button class="btn btn-secondary btn-sm" botonesRectangulares
+                        (click)="cancelarSeleccion()">Cancelar</button>
+                </div>
+            </div>
+        </section>
+        <br>
+        <section class="panel-turnos">
+            <h1 class="mb-3">Listado turnos</h1>
+
+            <div class="turnos-grid">
+                <div *ngFor="let turno of turnos()" class="card turno-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ turno.especialidad }}</h5>
+                        <p class="card-text">
+                            <strong>Especialista:</strong> {{ turno.nombre_especialista }}<br />
+                            <strong>Fecha:</strong> {{ turno.fecha_turno | date:'fullDate' }}<br />
+                            <strong>Hora:</strong> {{ turno.hora_turno }}
+                        </p>
+
+                        <span class="badge bg-info text-dark">{{ turno.estado }}</span>
+
+                        <div class="acciones-turno" *ngIf="turno.estado === 'solicitado'">
+                            <input class="form-control" [(ngModel)]="turno.motivo_cancelacion"
+                                placeholder="Motivo de cancelación" />
+                            <button class="btn btn-danger btn-sm action-btn" botonesRectangulares
+                                (click)="cancelarTurno(turno)">Cancelar turno</button>
+                        </div>
+
+                        <div class="acciones-turno"
+                            *ngIf="turno.estado === 'realizado' && !turno.calificacion_paciente">
+                            <input class="form-control" [(ngModel)]="turno.comentario_paciente"
+                                placeholder="Tu comentario sobre la atención" />
+                            <button class="btn btn-primary btn-sm action-btn" botonesRectangulares
+                                (click)="calificarTurno(turno)">Calificar atención</button>
+                        </div>
+
+                        <div class="acciones-turno"
+                            *ngIf="turno.estado === 'realizado' && turno.comentario_especialista">
+                            <button class="btn btn-info btn-sm action-btn" botonesRectangulares
+                                (click)="verResena(turno)">Ver reseña</button>
+
+                            <button class="btn btn-secondary btn-sm action-btn" botonesRectangulares
+                                *ngIf="!turno.completadaEncuesta" (click)="abrirEncuesta(turno)">Completar
+                                encuesta</button>
+
+                            <span *ngIf="turno.completadaEncuesta" class="badge bg-success ms-2">Encuesta
+                                completada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- ========== MODAL ENCUESTA ========== -->
+<div class="modal-backdrop" *ngIf="encuestaModalVisible()">
+    <div class="modal-card">
+        <h5 class="mb-3">Encuesta de satisfacción</h5>
+
+        <form [formGroup]="encuestaForm">
+            <label class="form-label">¿Cómo valora la atención del especialista?</label>
+            <select class="form-select mb-3" formControlName="r1">
+                <option value="" disabled>Seleccione…</option>
+                <option *ngFor="let op of opciones12" [value]="op">{{ op }}</option>
+            </select>
+
+            <label class="form-label">¿Cómo valora la atención del personal administrativo?</label>
+            <select class="form-select mb-3" formControlName="r2">
+                <option value="" disabled>Seleccione…</option>
+                <option *ngFor="let op of opciones12" [value]="op">{{ op }}</option>
+            </select>
+
+            <label class="form-label">¿Recomendaría nuestros servicios?</label>
+            <select class="form-select mb-2" formControlName="r3">
+                <option value="" disabled>Seleccione…</option>
+                <option *ngFor="let op of opciones3" [value]="op">{{ op }}</option>
+            </select>
+        </form>
+
+        <div *ngIf="cargandoEncuesta" class="text-center my-2">
+            <div class="spinner-border spinner-border-sm"></div> Guardando…
+        </div>
+        <small class="text-success" *ngIf="mensajeEncuesta">{{ mensajeEncuesta }}</small>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-success" [disabled]="encuestaForm.invalid || cargandoEncuesta"
+                (click)="enviarEncuesta()">Enviar</button>
+            <button class="btn btn-secondary" [disabled]="cargandoEncuesta"
+                (click)="cancelarEncuesta()">Cancelar</button>
         </div>
     </div>
 </div>

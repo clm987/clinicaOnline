@@ -1,43 +1,96 @@
-.filtros {
-    background-color: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
+.turnos-wrapper {
+    background-image: url('/assets/img/fondoClinica.jpeg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.turnos-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 1100px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.panel-seleccion {
     margin-bottom: 2rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-.filtros .form-label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+.especialidades-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-end;
 }
 
-.filtros .btn {
-    min-width: 100px;
-}
-
-.filtros input[type="text"] {
-    max-width: 300px;
-}
-
-.lista-turnos {
+.especialidad-card {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    align-items: center;
+    width: 70px;
 }
 
-.lista-turnos .card {
-    border: 1px solid #dee2e6;
+.especialidad-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    outline: 0;
+    width: 60px;
+    height: 60px;
+}
+
+.especialidad-btn:hover {
+    transform: scale(1.06);
+    transition: transform 0.2s ease;
+}
+
+.nombre-label {
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 1.1;
+    margin-top: 0.25rem;
+}
+
+.limpiar-btn {
+    height: 36px;
+    align-self: flex-end;
+    margin-left: 1rem;
+}
+
+.buscar-input {
+    max-width: 300px;
+    margin-top: 1rem;
+}
+
+.panel-turnos {
+    margin-top: 3rem;
+}
+
+.turnos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.turno-card {
+    background: #ffffff;
     border-radius: 0.75rem;
     padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.lista-turnos .card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
-.lista-turnos .card-text {
+.card-text {
     font-size: 0.95rem;
     line-height: 1.4;
     margin-bottom: 0.5rem;
@@ -49,10 +102,55 @@
     margin-top: 0.5rem;
 }
 
-.card .form-control {
-    max-width: 100%;
+.acciones-turno {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.card .btn {
-    min-width: 100px;
+.comentario-input {
+    width: 100%;
+}
+
+.action-btn {
+    min-width: 110px;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.modal-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-salir {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #3546dc;
+    color: white;
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.btn-salir:hover {
+    background-color: #16067d;
 }

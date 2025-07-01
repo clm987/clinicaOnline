@@ -1,5 +1,5 @@
 <div class="login-wrapper">
-    <button class="btn-cerrar-sesion" (click)="logout()">Cerrar sesión</button>
+    <button class="btn-cerrar-sesion" (click)="logout()">Volver</button>
     <div class="login-card">
         <button class="btn-close" (click)="cancelar()">×</button>
         <h2 class="text-center mb-4">Iniciar Sesión</h2>
@@ -15,13 +15,13 @@
                 <input id="contrasena" type="password" class="form-control" [(ngModel)]="contrasena" name="contrasena"
                     required />
             </div>
-
+            <br>
             <button type="submit" class="btn btn-primary w-100">Ingresar</button>
             <button type="button" class="btn btn-outline-secondary w-100" (click)="irARegistro()">Registrarme</button>
         </form>
 
         <div class="acceso-rapido mt-4 d-flex justify-content-center gap-3 flex-wrap">
-            <button class="acceso-btn" (click)="loginRapido('labip68624@cristout.com', 'fotoPerfilPaciente1')"
+            <button botonesRedondos (click)="loginRapido('labip68624@cristout.com', 'fotoPerfilPaciente1')"
                 [disabled]="cargando">
                 <img *ngIf="cargando !== 'fotoPerfilPaciente1'; else spinner1" src="assets/img/fotoPerfilPaciente1.jpg"
                     alt="Paciente 1" />
@@ -30,7 +30,7 @@
                 </ng-template>
             </button>
 
-            <button class="acceso-btn" (click)="loginRapido('unemaildeprueba9871@gmail.com', 'fotoPerfilPaciente2')"
+            <button botonesRedondos (click)="loginRapido('unemaildeprueba9871@gmail.com', 'fotoPerfilPaciente2')"
                 [disabled]="cargando">
                 <img *ngIf="cargando !== 'fotoPerfilPaciente2'; else spinner2" src="assets/img/fotoPerfilPaciente2.jpg"
                     alt="Paciente 2" />
@@ -39,7 +39,7 @@
                 </ng-template>
             </button>
 
-            <button class="acceso-btn" (click)="loginRapido('unemaildeprueba9872@gmail.com', 'fotoPerfilPaciente3')"
+            <button botonesRedondos (click)="loginRapido('unemaildeprueba9872@gmail.com', 'fotoPerfilPaciente3')"
                 [disabled]="cargando">
                 <img *ngIf="cargando !== 'fotoPerfilPaciente3'; else spinner3" src="assets/img/fotoPerfilPaciente3.jpg"
                     alt="Paciente 3" />
@@ -48,7 +48,7 @@
                 </ng-template>
             </button>
 
-            <button class="acceso-btn" (click)="loginRapido('clm987@gmail.com', 'fotoPerfilEspecialista1')"
+            <button botonesRedondos (click)="loginRapido('clm987@gmail.com', 'fotoPerfilEspecialista1')"
                 [disabled]="cargando">
                 <img *ngIf="cargando !== 'fotoPerfilEspecialista1'; else spinner4"
                     src="assets/img/fotoPerfilEspecialista1.jpg" alt="Especialista 1" />
@@ -57,7 +57,7 @@
                 </ng-template>
             </button>
 
-            <button class="acceso-btn" (click)="loginRapido('unemaildeprueba9873@gmail.com', 'fotoPerfilEspecialista2')"
+            <button botonesRedondos (click)="loginRapido('unemaildeprueba9873@gmail.com', 'fotoPerfilEspecialista2')"
                 [disabled]="cargando">
                 <img *ngIf="cargando !== 'fotoPerfilEspecialista2'; else spinner5"
                     src="assets/img/fotoPerfilEspecialista2.jpg" alt="Especialista 2" />
@@ -66,7 +66,7 @@
                 </ng-template>
             </button>
 
-            <button class="acceso-btn" (click)="loginRapido('unemaildeprueba987@gmail.com', 'fotoPerfilAdmin')"
+            <button botonesRedondos (click)="loginRapido('unemaildeprueba987@gmail.com', 'fotoPerfilAdmin')"
                 [disabled]="cargando">
                 <img *ngIf="cargando !== 'fotoPerfilAdmin'; else spinner6" src="assets/img/fotoPerfilAdmin.jpg"
                     alt="Admin" />

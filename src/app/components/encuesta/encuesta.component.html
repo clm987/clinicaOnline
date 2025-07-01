@@ -1,0 +1,51 @@
+<div class="modal fade" id="modalEncuesta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form [formGroup]="form" (ngSubmit)="enviar()">
+                <div class="modal-header">
+                    <h5 class="modal-title">Encuesta de satisfacción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="cancelar()"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Pregunta 1 -->
+                    <label class="form-label">¿Cómo valora la atención del especialista?</label>
+                    <select class="form-select mb-3" formControlName="r1" required>
+                        <option value="" disabled selected>Seleccione…</option>
+                        <option *ngFor="let op of opciones12">{{ op }}</option>
+                    </select>
+
+                    <!-- Pregunta 2 -->
+                    <label class="form-label">¿Cómo valora la atención del personal administrativo?</label>
+                    <select class="form-select mb-3" formControlName="r2" required>
+                        <option value="" disabled selected>Seleccione…</option>
+                        <option *ngFor="let op of opciones12">{{ op }}</option>
+                    </select>
+
+                    <!-- Pregunta 3 -->
+                    <label class="form-label">¿Recomendaría nuestros servicios?</label>
+                    <select class="form-select mb-2" formControlName="r3" required>
+                        <option value="" disabled selected>Seleccione…</option>
+                        <option *ngFor="let op of opciones3">{{ op }}</option>
+                    </select>
+
+                    <div *ngIf="cargando" class="text-center my-2">
+                        <div class="spinner-border spinner-border-sm"></div> Guardando…
+                    </div>
+                    <div *ngIf="mensaje" class="text-success small">{{ mensaje }}</div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" [disabled]="cargando || form.invalid">
+                        Enviar
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelar()"
+                        [disabled]="cargando">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

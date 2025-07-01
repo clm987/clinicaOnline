@@ -75,3 +75,28 @@
     margin: 0;
     font-weight: 600;
 }
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.chip {
+    background-color: #e8f0fe;
+    border: 1px solid #90a4d4;
+    border-radius: 16px;
+    padding: 0 8px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+}
+
+.chip button {
+    background: transparent;
+    border: none;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    margin-left: 4px;
+}

@@ -1,0 +1,86 @@
+<div class="historia-wrapper">
+    <div class="historia-card">
+        <app-mensaje *ngIf="mensaje() as m" [tipo]="m.tipo" [mensaje]="m.texto"></app-mensaje>
+
+        <div class="mb-4" *ngIf="!pacienteRutaId && perfil() !== 'paciente'">
+            <h5 class="mb-2">Pacientes</h5>
+            <div class="d-flex flex-wrap">
+                <div class="paciente-btn" *ngFor="let p of pacientes()" (click)="seleccionarPaciente(p)">
+                    <img [src]="p.avatar_url" alt="avatar" />
+                    <p>{{ p.nombre }} {{ p.apellido }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="pacienteSeleccionado()">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="titulo text-center flex-grow-1 m-0">Historia Clínica</h2>
+                <img class="avatar-paciente" [src]="pacienteSeleccionado()?.avatar_url" alt="avatar" />
+            </div>
+
+            <h4 class="mb-3">
+                {{ pacienteSeleccionado()?.nombre }} {{ pacienteSeleccionado()?.apellido }}
+            </h4>
+
+            <div *ngIf="historia(); else sinHistoria" class="mb-4">
+                <div><strong>Altura:</strong> {{ historia()?.altura }}</div>
+                <div><strong>Peso:</strong> {{ historia()?.peso }}</div>
+                <div><strong>Temperatura:</strong> {{ historia()?.temperatura }}</div>
+                <div><strong>Presión:</strong> {{ historia()?.presion }}</div>
+                <div *ngFor="let par of (historia()?.datos_extra | keyvalue)">
+                    <strong>{{ par.key }}:</strong> {{ par.value }}
+                </div>
+            </div>
+            <ng-template #sinHistoria>
+                <p class="text-muted mb-4">Sin historia clínica cargada.</p>
+            </ng-template>
+            <h5>Turnos finalizados</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Especialidad</th>
+                        <th>Reseña</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let t of turnos()">
+                        <td>{{ t.fecha_hora | date:'shortDate' }}</td>
+                        <td>{{ t.especialidad }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" (click)="verResena(t)">Ver</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form [formGroup]="historiaForm" *ngIf="perfil() === 'especialista'" class="mt-4 border-top pt-3">
+
+                <div class="row g-2">
+                    <div class="col-md-3"><input class="form-control" placeholder="Altura" formControlName="altura" />
+                    </div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Peso" formControlName="peso" /></div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Temperatura"
+                            formControlName="temperatura" /></div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Presión" formControlName="presion" />
+                    </div>
+
+                    <div class="col-md-3"><input class="form-control" placeholder="Clave 1"
+                            formControlName="dinamica1" /></div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Valor 1" formControlName="valor1" />
+                    </div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Clave 2"
+                            formControlName="dinamica2" /></div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Valor 2" formControlName="valor2" />
+                    </div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Clave 3"
+                            formControlName="dinamica3" /></div>
+                    <div class="col-md-3"><input class="form-control" placeholder="Valor 3" formControlName="valor3" />
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-success mt-3" (click)="guardarHistoria()">Guardar</button>
+            </form>
+        </div>
+    </div>
+</div>

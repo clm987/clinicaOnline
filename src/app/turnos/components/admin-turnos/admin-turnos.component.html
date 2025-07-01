@@ -1,0 +1,119 @@
+<div class="turnos-wrapper">
+    <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
+
+    <div class="turnos-card">
+
+        <section class="panel-alta-turno">
+
+            <div class="bloque-seleccion">
+                <label class="form-label">Pacientes</label>
+                <div class="contenedor-botones">
+                    <button *ngFor="let p of pacientes()" botonesRedondos class="btn-item"
+                        (click)="seleccionarPaciente(p)" [class.active]="p === pacienteSeleccionado">
+                        <img [src]="p.avatar_url || '/assets/img/placeholder-user.png'" alt="paciente">
+                    </button>
+                </div>
+            </div>
+
+            <div class="bloque-seleccion" *ngIf="pacienteSeleccionado">
+                <label class="form-label">Especialidades</label>
+                <div class="contenedor-botones">
+                    <button *ngFor="let esp of especialidades()" botonesRedondos class="btn-item"
+                        (click)="seleccionarEspecialidad(esp.nombre)"
+                        [class.active]="esp.nombre === especialidadSeleccionada">
+                        <img [src]="esp.imagen_url || '/assets/img/placeholder-esp.png'" alt="especialidad">
+                    </button>
+                </div>
+            </div>
+
+            <div class="bloque-seleccion" *ngIf="especialidadSeleccionada">
+                <label class="form-label">Especialistas</label>
+                <div class="contenedor-botones">
+                    <button *ngFor="let est of especialistasFiltrados()" botonesRedondos class="btn-item"
+                        (click)="seleccionarEspecialista(est)" [class.active]="est === especialistaSeleccionado">
+                        <img [src]="est.avatar_url || '/assets/img/placeholder-user.png'" alt="especialista">
+                    </button>
+                </div>
+            </div>
+
+            <div class="bloque-seleccion" *ngIf="horariosDisponibles().length && especialistaSeleccionado">
+                <label class="form-label">Fechas</label>
+                <div class="contenedor-botones">
+                    <button *ngFor="let f of fechasUnicas" botonesRectangulares class="btn-rect"
+                        (click)="seleccionarFecha(f)" [class.active]="f === fechaSeleccionada">
+                        {{ f | date:'dd/MM' }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="bloque-seleccion" *ngIf="fechaSeleccionada">
+                <label class="form-label">Horas</label>
+                <div class="contenedor-botones">
+                    <button *ngFor="let h of horasFiltradas" botonesRectangulares class="btn-rect"
+                        (click)="seleccionarHorario(h)" [class.active]="h === horarioSeleccionado">
+                        {{ h.horario }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="horarioSeleccionado" class="alert alert-info confirm-card">
+                <p><strong>Paciente:</strong> {{ pacienteSeleccionado?.nombre }} {{ pacienteSeleccionado?.apellido }}
+                </p>
+                <p><strong>Especialista:</strong> {{ especialistaSeleccionado?.nombre }} {{
+                    especialistaSeleccionado?.apellido }}</p>
+                <p><strong>Fecha y hora:</strong> {{ horarioSeleccionado.fecha | date:'fullDate' }} - {{
+                    horarioSeleccionado.horario }}</p>
+                <div class="botones-confirmacion">
+                    <button botonesRectangulares class="btn-confirmar" (click)="confirmarTurno()">Confirmar
+                        turno</button>
+                    <button botonesRectangulares class="btn-cancelar" (click)="cancelarSeleccion()">Cancelar</button>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="panel-turnos-grid">
+            <h3 class="titulo-listado">Listado de turnos</h3>
+
+            <div class="turnos-grid">
+                <div *ngFor="let t of turnos()" class="card turno-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ t.especialidad }}</h5>
+                        <p class="card-text">
+                            <strong>Paciente:</strong> {{ t.nombre_paciente }}<br>
+                            <strong>Especialista:</strong> {{ t.nombre_especialista }}<br>
+                            <strong>Fecha:</strong> {{ t.fecha_turno | date:'fullDate' }}<br>
+                            <strong>Hora:</strong> {{ t.hora_turno }}
+                        </p>
+                        <span class="badge bg-info text-dark">{{ t.estado }}</span>
+
+                        <div class="acciones-turno" *ngIf="t.estado === 'solicitado'">
+                            <div class="campo-accion">
+                                <input class="form-control" [(ngModel)]="t.motivo_cancelacion" placeholder="Motivo">
+                                <button botonesRectangulares class="btn-rect"
+                                    (click)="cancelarTurno(t)">Cancelar</button>
+                            </div>
+
+                            <div class="campo-accion">
+                                <input class="form-control" [(ngModel)]="t.motivo_rechazo" placeholder="Motivo rechazo">
+                                <div class="fila-botones">
+                                    <button botonesRectangulares class="btn-rect"
+                                        (click)="rechazarTurno(t)">Rechazar</button>
+                                    <button botonesRectangulares class="btn-rect"
+                                        (click)="aceptarTurno(t)">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="acciones-turno" *ngIf="t.estado === 'aceptado'">
+                            <input class="form-control" [(ngModel)]="t.comentario_especialista"
+                                placeholder="Comentario">
+                            <button botonesRectangulares class="btn-rect" (click)="finalizarTurno(t)">Finalizar</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

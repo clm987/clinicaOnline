@@ -1,12 +1,16 @@
-<button *ngIf="usuario" (click)="logout()" class="btn-cerrar-sesion">
-    Cerrar sesión
-</button>
 <div class="home-wrapper d-flex flex-column align-items-center">
+    <div *ngIf="usuario">
+        <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
+    </div>
     <div class="overlay-card p-5 rounded shadow mt-5">
         <h1 class="mb-4">Bienvenidos a Clínica Online</h1>
-        <div *ngIf="!usuario" class="d-flex flex-column gap-3">
-            <a routerLink="/login" class="btn btn-primary btn-lg">Ingresar</a>
-            <a routerLink="/registro" class="btn btn-outline-light btn-lg">Registro</a>
+        <div *ngIf="!usuario" class="d-flex justify-content-center gap-5">
+            <button class="boton-icono" (click)="irALogin()">
+                <img src="assets/img/login.png" alt="Ingresar" />
+            </button>
+            <button class="boton-icono" (click)="irARegistro()">
+                <img src="assets/img/registro.png" alt="Registro" />
+            </button>
         </div>
     </div>
 

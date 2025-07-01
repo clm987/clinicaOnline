@@ -1,16 +1,22 @@
 <div class="text-end mb-3">
-    <button class="btn-cerrar-sesion btn-sm" (click)="cerrarSesion()">Cerrar sesión</button>
+    <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
 </div>
+
 <div class="usuarios-wrapper">
     <app-mensaje *ngIf="mensajeVisible" [mensaje]="mensajeTexto" [tipo]="mensajeTipo"
         [autoCerrar]="false"></app-mensaje>
 
     <h2 class="mb-4">Gestión de Usuarios</h2>
 
-    <div class="usuarios-lista mb-5">
-        <h4 class="mb-3">Usuarios registrados</h4>
+    <div *ngIf="loadingUsuarios" class="spinner-wrapper text-center my-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="mt-2">Loading...</div>
+    </div>
+    <div class="card-seccion mb-5" *ngIf="!loadingUsuarios">
+        <h4 class="mb-4">Usuarios registrados</h4>
+
         <div class="table-responsive">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered text-center table-sm custom-table">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -18,55 +24,75 @@
                         <th>Perfil</th>
                         <th>Email</th>
                         <th>Estado</th>
-                        <th>Acción</th>
+                        <th style="width: 180px;">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let user of usuarios">
-                        <td>{{ user.nombre }}</td>
-                        <td>{{ user.apellido }}</td>
+                        <td>{{ user.nombre | capitalizar }}</td>
+                        <td>{{ user.apellido | capitalizar }}</td>
                         <td>{{ user.perfil }}</td>
                         <td>{{ user.email }}</td>
                         <td>
                             <span *ngIf="user.perfil === 'especialista'" class="badge"
                                 [ngClass]="user.habilitado ? 'bg-success' : 'bg-secondary'">
-                                {{ user.habilitado ? 'Habilitado' : 'Inhabilitado' }}
+                                {{ user.habilitado | estadoUsuario }}
                             </span>
                         </td>
-                        <td>
-                            <button *ngIf="user.perfil === 'especialista'"
-                                class="btn btn-sm btn-outline-primary btn-toggle" (click)="alternarHabilitacion(user)">
+                        <td class="d-flex gap-2">
+                            <button *ngIf="user.perfil === 'especialista'" class="btn btn-sm btn-outline-primary"
+                                (click)="alternarHabilitacion(user)">
                                 Cambiar estado
+                            </button>
+                            <button *ngIf="user.perfil !== 'admin'" class="btn btn-sm btn-outline-secondary"
+                                (click)="verPerfil(user)">
+                                Ver perfil
                             </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <div class="mt-3">
+                <button class="btn btn-outline-success" (click)="descargarExcel()">
+                    Descargar en Excel
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="imprimir-turnos mb-5">
+        <h4 class="mb-3">Imprimir turnos</h4>
+        <div class="contenedor-pacientes">
+            <div class="paciente-card" *ngFor="let p of pacientes">
+                <button botonesRedondos class="btn-usuario" (click)="imprimirTurnosPaciente(p)">
+                    <img [src]="p.avatar_url || '/assets/img/placeholder-user.png'" [alt]="p.nombre" />
+                </button>
+                <small class="d-block mt-1 text-center">
+                    {{ p.nombre }} {{ p.apellido }}
+                </small>
+            </div>
         </div>
     </div>
 
-    <div class="crear-usuario">
+    <div class="card-seccion mt-4">
         <h4 class="mb-3">Crear nuevo usuario</h4>
 
         <div class="perfil-selector d-flex gap-3 mb-3">
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="paciente" name="perfil" value="paciente"
-                    [(ngModel)]="perfilSeleccionado" />
-                <label class="form-check-label" for="paciente">Paciente</label>
-            </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="especialista" name="perfil" value="especialista"
-                    [(ngModel)]="perfilSeleccionado" />
-                <label class="form-check-label" for="especialista">Especialista</label>
-            </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="admin" name="perfil" value="admin"
-                    [(ngModel)]="perfilSeleccionado" />
-                <label class="form-check-label" for="admin">Administrador</label>
-            </div>
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="paciente" [(ngModel)]="perfilSeleccionado" />
+                Paciente
+            </label>
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="especialista" [(ngModel)]="perfilSeleccionado" />
+                Especialista
+            </label>
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="admin" [(ngModel)]="perfilSeleccionado" />
+                Administrador
+            </label>
         </div>
 
-        <form *ngIf="perfilSeleccionado" [formGroup]="registroForm" (ngSubmit)="crearUsuario()"
+        <form *ngIf="perfilSeleccionado" [formGroup]="registroForm" (ngSubmit)="crearUsuario()" class="row g-3"
             class="formulario-admin">
             <input type="text" formControlName="nombre" class="form-control" placeholder="Nombre" />
             <input type="text" formControlName="apellido" class="form-control" placeholder="Apellido" />
@@ -75,17 +101,26 @@
             <input type="email" formControlName="email" class="form-control" placeholder="Email" />
             <input type="password" formControlName="contrasena" class="form-control" placeholder="Contraseña" />
 
+            <!-- paciente -->
             <div *ngIf="perfilSeleccionado === 'paciente'">
-                <input type="text" formControlName="obraSocial" class="form-control" placeholder="Obra Social" />
+                <div class="col-md-4">
+                    <input type="text" formControlName="obraSocial" class="form-control" placeholder="Obra Social" />
+                </div>
                 <label class="form-label mt-2">Foto de perfil:</label>
-                <input type="file" class="form-control" (change)="seleccionarArchivoPaciente1($event)" />
+                <div class="col-md-4">
+                    <input type="file" class="form-control" (change)="seleccionarArchivoPaciente1($event)" />
+                </div>
                 <label class="form-label mt-2">Segunda imagen:</label>
-                <input type="file" class="form-control" (change)="seleccionarArchivoPaciente2($event)" />
+                <div class="col-md-4">
+                    <input type="file" class="form-control" (change)="seleccionarArchivoPaciente2($event)" />
+                </div>
             </div>
 
+            <!-- especialista -->
             <div *ngIf="perfilSeleccionado === 'especialista'">
                 <input type="text" formControlName="especialidad" class="form-control mt-2"
                     placeholder="Escriba una especialidad..." />
+
                 <ul class="list-group mt-1" *ngIf="especialidades.length && registroForm.get('especialidad')?.value">
                     <li class="list-group-item list-group-item-action"
                         *ngFor="let esp of especialidades | filtro:registroForm.get('especialidad')?.value"
@@ -107,6 +142,7 @@
                 <input type="file" class="form-control" (change)="seleccionarArchivoEspecialista($event)" />
             </div>
 
+            <!-- admin -->
             <div *ngIf="perfilSeleccionado === 'admin'">
                 <label class="form-label mt-2">Foto de perfil:</label>
                 <input type="file" class="form-control" (change)="seleccionarArchivoAdmin($event)" />

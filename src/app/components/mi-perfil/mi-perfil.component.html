@@ -1,0 +1,144 @@
+<div class="perfil-wrapper">
+    <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
+    <app-mensaje *ngIf="mensaje() as m" [tipo]="m.tipo" [mensaje]="m.texto"></app-mensaje>
+
+    <div class="perfil-card">
+        <div class="info-basica text-center">
+            <img [src]="usuario()?.avatar_url" alt="Avatar" class="avatar mb-3" />
+            <h3>{{ usuario()?.nombre }} {{ usuario()?.apellido }}</h3>
+        </div>
+
+        <div *ngIf="perfil() === 'especialista'" class="mt-4">
+            <h4>Mis horarios</h4>
+
+            <label class="form-label">Especialidad</label>
+            <select class="form-select mb-2" [(ngModel)]="especialidadSeleccionada">
+                <option value="" disabled selected>Seleccionar...</option>
+                <option *ngFor="let esp of especialidades()" [value]="esp">{{ esp }}</option>
+            </select>
+
+            <label class="form-label">Días de la semana</label>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <label class="form-check" *ngFor="let d of dias">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="d.sel" />
+                    {{ d.nombre }}
+                </label>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">Inicio</label>
+                    <input type="time" class="form-control" [(ngModel)]="horarioInicio" />
+                </div>
+                <div class="col">
+                    <label class="form-label">Fin</label>
+                    <input type="time" class="form-control" [(ngModel)]="horarioFin" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">Fecha inicio</label>
+                    <input type="date" class="form-control" [(ngModel)]="fechaInicio" />
+                </div>
+                <div class="col">
+                    <label class="form-label">Fecha fin</label>
+                    <input type="date" class="form-control" [(ngModel)]="fechaFin" />
+                </div>
+            </div>
+
+            <button class="btn btn-success" (click)="guardarDisponibilidad()">Guardar disponibilidad</button>
+        </div>
+
+        <div *ngIf="perfil() === 'especialista'" class="mt-5">
+            <h4 class="mb-3">Pacientes</h4>
+            <div class="d-flex flex-wrap gap-2">
+                <button *ngFor="let p of pacientes()" (click)="seleccionarPaciente(p)" botonesRedondos
+                    class="position-relative border-0 bg-transparent">
+                    <img [src]="p.avatar_url" alt="avatar" />
+                    <p class="mt-1 small text-center">{{ p.nombre_paciente }} {{ p.apellido_paciente }}</p>
+                </button>
+            </div>
+
+            <div *ngIf="pacienteSeleccionado()" class="mt-4">
+                <h5>{{ pacienteSeleccionado()?.nombre_paciente }} {{ pacienteSeleccionado()?.apellido_paciente }}</h5>
+
+                <div *ngIf="historiaSeleccionada(); else sinHist" class="mb-3">
+                    <p><strong>Altura:</strong> {{ historiaSeleccionada()?.altura }}</p>
+                    <p><strong>Peso:</strong> {{ historiaSeleccionada()?.peso }}</p>
+                    <p><strong>Temperatura:</strong> {{ historiaSeleccionada()?.temperatura }}</p>
+                    <p><strong>Presión:</strong> {{ historiaSeleccionada()?.presion }}</p>
+                    <div *ngFor="let kv of (historiaSeleccionada()?.datos_extra | keyvalue)">
+                        <strong>{{ kv.key }}:</strong> {{ kv.value }}
+                    </div>
+                </div>
+                <ng-template #sinHist>
+                    <p class="text-muted">Sin historia clínica cargada.</p>
+                </ng-template>
+
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Especialidad</th>
+                            <th>Comentario del especialista</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let t of turnosPaciente()">
+                            <td>{{ t.fecha_hora | date:'shortDate' }}</td>
+                            <td>{{ t.especialidad }}</td>
+                            <td>{{ t.comentario_especialista }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div *ngIf="perfil() !== 'especialista'" class="mt-4">
+            <div class="zona-botones mt-4">
+                <div class="boton-card" [routerLink]="['/historia-clinica', usuario()?.user_auth_id]">
+                    <img src="/assets/img/botonHistoria.png" alt="Historia Clínica" />
+                    <p>Historia Clínica</p>
+                </div>
+            </div>
+            <button class="btn-accion mt-2" (click)="descargarHistoriaClinica()">Descargar historia
+                clínica</button>
+            <br>
+            <br>
+            <label class="form-label mt-4">Búsqueda de turnos</label>
+
+            <div class="busqueda-turnos">
+                <input class="form-control" [(ngModel)]="busquedaEspecialista" placeholder="Ingrese especialista" />
+                <button class="btn-accion" (click)="buscarTurnos()">Buscar</button>
+            </div>
+            <br>
+
+            <table *ngIf="turnosEncontrados().length" class="turnos-table mt-3">
+                <thead>
+                    <tr>
+                        <th>Especialista</th>
+                        <th>Especialidad</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Comentario especialista</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let t of turnosEncontrados()">
+                        <td>{{ t.nombre_especialista }}</td>
+                        <td>{{ t.especialidad }}</td>
+                        <td>{{ t.fecha_hora | date: 'shortDate' }}</td>
+                        <td>{{ t.fecha_hora | date: 'shortTime' }}</td>
+                        <td>{{ t.comentario_especialista || '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <button botonesRectangulares *ngIf="turnosEncontrados().length" class="btn-accion mt-2"
+                (click)="imprimirTurnos()">
+                Imprimir turnos
+            </button>
+        </div>
+    </div>
+</div>

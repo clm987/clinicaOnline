@@ -1,0 +1,143 @@
+.perfil-wrapper {
+    background-image: url('/assets/img/fondoClinica.jpeg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.perfil-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.zona-botones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.boton-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    width: 200px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(52, 15, 15, 0.2);
+    font-family: 'Open Sans', sans-serif;
+    color: #003366;
+    text-decoration: none;
+}
+
+.boton-card img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+
+.boton-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 51, 102, 0.4);
+}
+
+.boton-card p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.perfil-card input[placeholder="Ingrese especialista"] {
+    min-width: 0;
+}
+
+.btn-accion {
+    padding: 0.6rem 1.4rem;
+    border-radius: 0.55rem;
+    border: 2px solid #042a77;
+    background-color: #196dec;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-accion:hover {
+    background-color: #79a5e6;
+    transform: translateY(-1px);
+}
+
+.busqueda-turnos {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 0.25rem;
+}
+
+.busqueda-turnos .form-control {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.turnos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.turnos-table,
+.turnos-table th,
+.turnos-table td {
+    border: 1px solid #003366;
+}
+
+.turnos-table th {
+    font-weight: 700;
+    background-color: #e6f0ff;
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+}
+
+.turnos-table td {
+    padding: 0.35rem 0.6rem;
+}
+
+.btn-salir {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #3546dc;
+    color: white;
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.btn-salir:hover {
+    background-color: #16067d;
+}

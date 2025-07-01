@@ -1,0 +1,44 @@
+<div class="estad-wrapper">
+    <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
+
+    <div class="estad-card">
+
+        <h2 class="mb-4 text-center">Estadísticas del Sistema</h2>
+
+        <section class="mb-5">
+            <app-log-ingresos></app-log-ingresos>
+        </section>
+        <br>
+        <br>
+        <section>
+            <div class="estad-grid">
+
+                <div class="graf-box">
+                    <h5 class="graf-titulo">Turnos por especialidad</h5>
+                    <app-turnos-especialidad #grafEsp></app-turnos-especialidad>
+                </div>
+
+                <div class="graf-box">
+                    <h5 class="graf-titulo">Turnos por día (últimos&nbsp;15)</h5>
+                    <app-turnos-dia #grafDia></app-turnos-dia>
+                </div>
+
+                <div class="graf-box">
+                    <h5 class="graf-titulo">Turnos solicitados por médico</h5>
+                    <app-turnos-solicitados-medico #grafSol></app-turnos-solicitados-medico>
+                </div>
+
+                <div class="graf-box">
+                    <h5 class="graf-titulo">Turnos finalizados por médico</h5>
+                    <app-turnos-finalizados-medico #grafFin></app-turnos-finalizados-medico>
+                </div>
+
+            </div>
+            <br>
+            <div class="text-end mb-3">
+                <button class="btn btn-success" (click)="descargarReportes()">Descargar reportes</button>
+            </div>
+        </section>
+
+    </div>
+</div>

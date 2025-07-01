@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { CredencialesService } from '../../services/credenciales.service';
 import { SupabaseDbService } from '../../services/supabase-db.service';
 import { MensajeComponent } from '../mensaje/mensaje.component';
+import { BotonesRedondosDirective } from '../../directivas/botones-redondos.directive';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, MensajeComponent],
+  imports: [CommonModule, FormsModule, MensajeComponent, BotonesRedondosDirective],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -42,7 +43,6 @@ export class LoginComponent {
       if (!usuarioAutenticado.email) {
         throw new Error('El usuario no tiene un email válido');
       }
-
       await this.supabaseDb.registrarLoginUsuario(usuarioAutenticado.id, usuarioAutenticado.email);
 
       this.mostrarMensaje('Inicio de sesión exitoso', 'success');
@@ -50,7 +50,11 @@ export class LoginComponent {
       this.router.navigate(['/home']);
     } catch (error) {
       console.error(error);
-      this.mostrarMensaje('Credenciales inválidas.', 'error');
+      const texto =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Credenciales inválidas.';
+      this.mostrarMensaje(texto, 'error');
     }
   }
 

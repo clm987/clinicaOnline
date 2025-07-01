@@ -1,0 +1,98 @@
+.historia-wrapper {
+    background-image: url('/assets/img/fondoClinica.jpeg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.historia-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.paciente-btn {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(52, 15, 15, 0.2);
+    color: #003366;
+}
+
+.paciente-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 51, 102, 0.4);
+}
+
+.paciente-btn img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+
+.paciente-btn p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #003366;
+}
+
+.turno-detalle {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f7f9fb;
+    border-left: 4px solid #003366;
+    border-radius: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.botones-acciones {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .paciente-btn {
+        width: 80px;
+        height: 80px;
+    }
+
+    .paciente-btn img {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+.titulo {
+    font-size: 1.8rem;
+}
+
+.avatar-paciente {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 1rem;
+}

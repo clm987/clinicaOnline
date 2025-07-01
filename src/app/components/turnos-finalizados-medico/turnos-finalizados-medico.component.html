@@ -1,0 +1,14 @@
+<div class="row g-2 align-items-end mb-3">
+    <div class="col-md-4">
+        <label class="form-label">Desde</label>
+        <input type="date" class="form-control" [(ngModel)]="desde" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Hasta</label>
+        <input type="date" class="form-control" [(ngModel)]="hasta" />
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-primary w-100" (click)="cargarDatos()">Actualizar</button>
+    </div>
+</div>
+<canvas #chartCanvas width="500" height="200"></canvas>

@@ -1,23 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import * as XLSX from 'xlsx';
+
 import { SupabaseDbService } from '../../services/supabase-db.service';
 import { CredencialesService } from '../../services/credenciales.service';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MensajeComponent } from '../mensaje/mensaje.component';
 import { FiltroPipe } from '../../pipes/filtro.pipe';
-import { Router } from '@angular/router';
+import { CapitalizarPipe } from '../../pipes/capitalizar.pipe';
+import { EstadoUsuarioPipe } from '../../pipes/estado-usuario.pipe';
+
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MensajeComponent, FiltroPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MensajeComponent, FiltroPipe, CapitalizarPipe, EstadoUsuarioPipe],
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.css']
 })
 export class UsuariosComponent implements OnInit {
   usuarios: any[] = [];
   registroForm!: FormGroup;
+
   mensajeVisible = false;
   mensajeTexto = '';
   mensajeTipo: 'success' | 'error' | 'warning' | 'info' = 'info';
@@ -30,6 +35,8 @@ export class UsuariosComponent implements OnInit {
   imagenPaciente2: File | null = null;
   imagenEspecialista: File | null = null;
   imagenAdmin: File | null = null;
+  pacientes: any[] = [];
+  loadingUsuarios: boolean = true;
 
   constructor(
     private supabaseDb: SupabaseDbService,
@@ -40,7 +47,6 @@ export class UsuariosComponent implements OnInit {
 
   async ngOnInit() {
     this.obtenerUsuarios();
-
     this.registroForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$')]],
       apellido: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$')]],
@@ -53,19 +59,46 @@ export class UsuariosComponent implements OnInit {
       nuevaEspecialidad: [''],
       agregarEspecialidadManualmente: [false]
     });
-
     try {
       this.especialidades = await this.supabaseDb.obtenerEspecialidades();
-    } catch (error) {
+    } catch {
       this.mostrarMensaje('Error al cargar especialidades', 'error');
     }
   }
 
   async obtenerUsuarios() {
+    this.loadingUsuarios = true;
     try {
       this.usuarios = await this.supabaseDb.obtenerTodosLosUsuarios();
-    } catch (error) {
+      this.pacientes = this.usuarios.filter(u => u.perfil === 'paciente');
+      this.loadingUsuarios = false;
+    } catch {
       this.mostrarMensaje('Error al cargar usuarios', 'error');
+    }
+  }
+  async imprimirTurnosPaciente(paciente: any) {
+    try {
+      const turnos = await this.supabaseDb.obtenerTurnosDePaciente(paciente.user_auth_id);
+      if (!turnos.length) {
+        this.mostrarMensaje('El paciente no tiene turnos registrados.', 'warning');
+        return;
+      }
+
+      const rows = turnos.map(t => ({
+        Especialista: t.nombre_especialista,
+        Especialidad: t.especialidad,
+        Fecha: new Date(t.fecha_hora).toLocaleDateString('es-ES'),
+        Hora: new Date(t.fecha_hora).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+        Estado: t.estado
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Turnos');
+      const nombreArchivo = `turnos_${paciente.apellido}_${paciente.nombre}.xlsx`;
+      XLSX.writeFile(wb, nombreArchivo);
+    } catch {
+      this.mostrarMensaje('Error al generar el reporte', 'error');
     }
   }
 
@@ -73,27 +106,13 @@ export class UsuariosComponent implements OnInit {
     this.perfilSeleccionado = perfil;
     this.registroForm.reset();
     this.agregarEspecialidadManualmente = false;
-    this.imagenPaciente1 = null;
-    this.imagenPaciente2 = null;
-    this.imagenEspecialista = null;
-    this.imagenAdmin = null;
+    this.imagenPaciente1 = this.imagenPaciente2 = this.imagenEspecialista = this.imagenAdmin = null;
   }
 
-  seleccionarArchivoPaciente1(event: any) {
-    this.imagenPaciente1 = event.target.files[0];
-  }
-
-  seleccionarArchivoPaciente2(event: any) {
-    this.imagenPaciente2 = event.target.files[0];
-  }
-
-  seleccionarArchivoEspecialista(event: any) {
-    this.imagenEspecialista = event.target.files[0];
-  }
-
-  seleccionarArchivoAdmin(event: any) {
-    this.imagenAdmin = event.target.files[0];
-  }
+  seleccionarArchivoPaciente1(e: any) { this.imagenPaciente1 = e.target.files[0]; }
+  seleccionarArchivoPaciente2(e: any) { this.imagenPaciente2 = e.target.files[0]; }
+  seleccionarArchivoEspecialista(e: any) { this.imagenEspecialista = e.target.files[0]; }
+  seleccionarArchivoAdmin(e: any) { this.imagenAdmin = e.target.files[0]; }
 
   async crearUsuario() {
     try {
@@ -101,33 +120,26 @@ export class UsuariosComponent implements OnInit {
         this.registroForm.markAllAsTouched();
         throw new Error('Complete todos los campos requeridos.');
       }
-
-      const form = this.registroForm.value;
-      const user = await this.credencialesService.registrarUsuario(form.email, form.contrasena);
+      const f = this.registroForm.value;
+      const user = await this.credencialesService.registrarUsuario(f.email, f.contrasena);
 
       let avatarUrl = '';
       let imagenExtra1 = '';
       const extra: any = {};
 
       if (this.perfilSeleccionado === 'paciente') {
-        if (!this.imagenPaciente1 || !this.imagenPaciente2) {
-          throw new Error('Debe subir ambas imágenes del paciente.');
-        }
+        if (!this.imagenPaciente1 || !this.imagenPaciente2) throw new Error('Debe subir ambas imágenes del paciente.');
         avatarUrl = await this.credencialesService.subirAvatar(this.imagenPaciente1);
         imagenExtra1 = await this.credencialesService.subirAvatar(this.imagenPaciente2);
-        extra.obra_social = form.obraSocial;
+        extra.obra_social = f.obraSocial;
         extra.imagen_extra_1 = imagenExtra1;
       }
 
       if (this.perfilSeleccionado === 'especialista') {
         if (!this.imagenEspecialista) throw new Error('Debe subir una imagen de perfil.');
         avatarUrl = await this.credencialesService.subirAvatar(this.imagenEspecialista);
-        if (form.agregarEspecialidadManualmente && form.nuevaEspecialidad) {
-          await this.supabaseDb.agregarEspecialidad(form.nuevaEspecialidad);
-          extra.especialidad = form.nuevaEspecialidad;
-        } else {
-          extra.especialidad = form.especialidad;
-        }
+        extra.especialidad = f.agregarEspecialidadManualmente && f.nuevaEspecialidad ? f.nuevaEspecialidad : f.especialidad;
+        if (f.agregarEspecialidadManualmente && f.nuevaEspecialidad) await this.supabaseDb.agregarEspecialidad(f.nuevaEspecialidad);
       }
 
       if (this.perfilSeleccionado === 'admin') {
@@ -136,22 +148,15 @@ export class UsuariosComponent implements OnInit {
       }
 
       await this.credencialesService.guardarDatosUsuario(
-        user,
-        form.nombre,
-        form.apellido,
-        +form.edad,
-        form.dni,
-        this.perfilSeleccionado,
-        avatarUrl,
-        extra
+        user, f.nombre, f.apellido, +f.edad, f.dni, this.perfilSeleccionado, avatarUrl, extra
       );
 
       this.mostrarMensaje('Usuario creado con éxito', 'success');
       this.registroForm.reset();
       this.perfilSeleccionado = null;
       this.obtenerUsuarios();
-    } catch (error: any) {
-      this.mostrarMensaje(error.message || 'Error al crear el usuario', 'error');
+    } catch (e: any) {
+      this.mostrarMensaje(e.message || 'Error al crear el usuario', 'error');
     }
   }
 
@@ -165,6 +170,29 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
+  descargarExcel() {
+    if (!this.usuarios.length) {
+      this.mostrarMensaje('No hay usuarios para exportar', 'warning');
+      return;
+    }
+    const rows = this.usuarios.map(u => ({
+      Nombre: u.nombre,
+      Apellido: u.apellido,
+      Perfil: u.perfil,
+      Email: u.email,
+      Estado: u.perfil === 'especialista' ? (u.habilitado ? 'Habilitado' : 'Inhabilitado') : ''
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+    XLSX.writeFile(wb, 'usuarios-clinica.xlsx');
+  }
+
+  verPerfil(user: any) {
+    if (user.perfil === 'admin') return;
+    this.router.navigate(['/mi-perfil', user.user_auth_id]);
+  }
+
   mostrarMensaje(texto: string, tipo: 'success' | 'error' | 'warning' | 'info') {
     this.mensajeTexto = texto;
     this.mensajeTipo = tipo;
@@ -174,8 +202,6 @@ export class UsuariosComponent implements OnInit {
 
   cerrarSesion() {
     this.credencialesService.logout();
-    this.router.navigate(['/home']);
+    window.location.href = '/home';
   }
-
-
 }

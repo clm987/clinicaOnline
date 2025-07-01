@@ -1,0 +1,18 @@
+<div class="row g-2 align-items-end mb-3">
+    <div class="col-md-4">
+        <label class=" labels">Desde</label>
+        <input type="date" class="form-control" [(ngModel)]="desde" (change)="actualizarRango()" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label labels">Hasta</label>
+        <input type="date" class="form-control" [(ngModel)]="hasta" (change)="actualizarRango()" />
+    </div>
+</div>
+
+<canvas #solicitadosChart width="400" height="200"></canvas>
+<div *ngIf="cargando" class="position-absolute top-50 start-50 translate-middle text-secondary">
+    Cargando…
+</div>
+<div *ngIf="error" class="alert alert-danger position-absolute top-50 start-50 translate-middle">
+    {{ error }}
+</div>

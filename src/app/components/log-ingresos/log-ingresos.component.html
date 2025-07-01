@@ -1,0 +1,32 @@
+<div class="log-wrapper">
+    <app-mensaje *ngIf="mensaje() as m" [mensaje]="m.texto" [tipo]="m.tipo"></app-mensaje>
+
+    <h3 class="mb-3">Log de ingresos</h3>
+    <br>
+    <div class="table-responsive mb-4" *ngIf="logs().length; else sinDatos">
+        <table class="table table-bordered text-center table-sm custom-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let l of logs()">
+                    <td>{{ l.email }}</td>
+                    <td>{{ l.fecha }}</td>
+                    <td>{{ l.hora }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div class="text-start mt-3">
+            <button class="btn btn-outline-success" (click)="descargarExcel()">Descargar Excel</button>
+        </div>
+    </div>
+
+    <ng-template #sinDatos>
+        <p class="text-muted">No hay registros para mostrar.</p>
+    </ng-template>
+</div>

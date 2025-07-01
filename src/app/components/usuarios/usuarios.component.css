@@ -94,3 +94,113 @@ select.form-control {
     color: #dc3545;
     text-decoration: underline;
 }
+
+.btn-salir {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #3546dc;
+    color: white;
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.btn-salir:hover {
+    background-color: #16067d;
+}
+
+.imprimir-turnos {
+    background-color: #f8f9fa;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.contenedor-pacientes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.paciente-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90px;
+}
+
+.paciente-card img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.btn-item.active,
+.btn-item:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+.btn-usuario {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+.btn-usuario img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #003366;
+    transition: transform 0.2s ease;
+}
+
+.btn-usuario:hover img {
+    transform: scale(1.05);
+}
+
+.btn-usuario-label {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #003366;
+    text-align: center;
+}
+
+.card-seccion {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table th {
+    background-color: #f0f4fa;
+    color: #003366;
+    font-weight: bold;
+}
+
+.custom-table td,
+.custom-table th {
+    border: 1px solid #cfd8e3;
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+.spinner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
